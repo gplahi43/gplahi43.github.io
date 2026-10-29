@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b10">
+<title>Instagram Private Viewer Tool</title>
+<style>
+:root{color-scheme:dark;--bg:#080b10;--panel:#10151d;--line:#27313e;--muted:#8b98aa;--text:#f3f6fb;--green:#8bffb0;--blue:#8ab4ff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:20px;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 0%,#172337 0%,#0a0e15 42%,#06080c 100%);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+.tool{width:min(100%,440px);overflow:hidden;border:1px solid #303a48;border-radius:22px;background:linear-gradient(145deg,rgba(20,27,38,.98),rgba(10,14,21,.99));box-shadow:0 28px 90px #0009,0 0 45px #5d8eff0b}
+.windowbar{height:48px;padding:0 15px;display:flex;align-items:center;gap:7px;background:#0b0f15;border-bottom:1px solid #202936}
+.traffic{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1px #0002}
+.red{background:#ff5f57}.yellow{background:#febc2e}.green{background:#28c840}
+.windowtitle{margin:auto;padding-right:47px;font:12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#94a0b2;letter-spacing:.2px}
+.inner{padding:24px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:25px}
+.brand{display:flex;align-items:center;gap:11px}
+.brandicon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#b1ffca,#42d97d);color:#07140c;font-size:17px;font-weight:900;box-shadow:0 5px 24px #41d9822b}
+.brandname{font-size:17px;font-weight:750;letter-spacing:-.45px}
+.brandname small{display:block;margin-top:3px;font-size:10px;font-weight:500;letter-spacing:1.4px;text-transform:uppercase;color:#8190a4}
+.status{display:flex;align-items:center;gap:7px;border:1px solid #24533a;background:#10251a;border-radius:999px;padding:7px 10px;color:#9dffbc;font:11px ui-monospace,monospace;white-space:nowrap}
+.statusdot{width:6px;height:6px;background:#65f594;border-radius:50%;box-shadow:0 0 9px #65f594}
+.intro{margin:0 0 7px;font-size:22px;line-height:1.2;letter-spacing:-.7px;font-weight:750}
+.subintro{margin:0 0 23px;color:#9ba8ba;font-size:13px;line-height:1.6}
+.label{display:block;margin:0 0 9px;font-size:12px;font-weight:650;color:#c0cad7;letter-spacing:.2px}
+.inputwrap{position:relative;margin-bottom:21px}
+.inputwrap span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px}
+.username{width:100%;padding:14px 14px 14px 40px;border:1px solid #303b4a;border-radius:12px;background:#0b1017;color:#f5f7fb;font-size:14px;outline:none;transition:border .2s,box-shadow .2s}
+.username::placeholder{color:#667487}
+.username:focus{border-color:#72a7ff;box-shadow:0 0 0 3px #72a7ff1c}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 22px}
+.option{min-height:78px;padding:13px 10px;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #293442;border-radius:13px;background:#111822;color:#c8d2df;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+.option:hover{border-color:#4a5d74;transform:translateY(-1px)}
+.option.active{background:linear-gradient(135deg,#14271e,#111b18);border-color:#51d982;color:#f4fff7;box-shadow:inset 0 0 0 1px #51d9821a}
+.option .emoji{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:10px;background:#202a37;font-size:18px}
+.option.active .emoji{background:#1b3a29}
+.option strong{display:block;font-size:13px;font-weight:650}
+.option small{display:block;margin-top:4px;color:#8492a5;font-size:10px}
+.primary{width:100%;padding:15px 18px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #a9ffc6;border-radius:12px;background:linear-gradient(135deg,#a6ffc1,#54e58b);color:#07160d;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 25px #4ce48720;transition:transform .18s,filter .18s}
+.primary:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.primary:active{transform:scale(.99)}
+.primary:disabled{opacity:.55;cursor:wait}
+.arrow{font-size:17px}
+.footnote{text-align:center;margin:14px 0 0;color:#657386;font-size:10px;line-height:1.5}
+.terminal{display:block;width:min(100%,520px);border:1px solid #273442;border-radius:15px;overflow:hidden;background:#070b0f;box-shadow:0 28px 100px #000b,0 0 40px #63ff9910}
+.terminal.show{animation:fadein .28s ease}
+.terminal-overlay{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,5,9,.82);backdrop-filter:blur(12px)}
+.terminal-overlay.show{display:flex;animation:fadein .22s ease}
+.terminal .termbody{min-height:230px;max-height:min(52vh,380px);overflow:auto;padding:17px 16px 20px;font-size:12px;line-height:2}
+.terminal .termhead{padding:12px 15px}
+.term-caption{font:10px ui-monospace,monospace;color:#718197;text-align:center;margin-top:12px}
+@media(max-width:480px){.terminal-overlay{padding:12px}.terminal .termbody{min-height:210px;max-height:55vh;padding:13px;font-size:11px}.terminal .termhead{font-size:9px}}
+.termhead{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#0e141b;border-bottom:1px solid #202b36;color:#8e9caf;font:10px ui-monospace,monospace}
+.termhead .live{color:#8dffb1}
+.termbody{padding:13px 13px 15px;font:11px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:112px;color:#a7b5c5;overflow-wrap:anywhere}
+.line{display:block}.prompt{color:#83ffab}.dim{color:#6d7b8d}.ok{color:#90ffb1}.cursor{display:inline-block;width:6px;height:12px;vertical-align:-2px;margin-left:3px;background:#9bffb6;animation:blink .9s steps(2,start) infinite}
+.final{display:none;text-align:center;padding-top:6px}
+.final.show{display:block;animation:fadein .3s ease}
+.checkmark{width:54px;height:54px;margin:4px auto 16px;display:grid;place-items:center;border-radius:18px;background:#123321;border:1px solid #286c43;color:#91ffb3;font-size:26px}
+.final h2{font-size:21px;letter-spacing:-.5px;margin:0 0 8px}
+.final p{font-size:13px;color:#9ba8ba;line-height:1.6;margin:0 0 20px}
+.secondary{width:100%;padding:14px;border:1px solid #2f6e48;border-radius:12px;background:#10251a;color:#a2ffbe;font-size:14px;font-weight:750;cursor:pointer}
+.hidden{display:none!important}
+@keyframes blink{to{visibility:hidden}}@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:380px){body{padding:10px}.inner{padding:19px}.intro{font-size:20px}.option{gap:7px;padding:11px 8px}.option .emoji{width:30px;height:30px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="tool" id="tool">
+  <div class="windowbar" aria-label="Mac-style window bar">
+    <span class="traffic red"></span><span class="traffic yellow"></span><span class="traffic green"></span>
+    <span class="windowtitle">private-viewer — terminal</span>
+  </div>
+  <div class="inner">
+    <div class="brandrow">
+      <div class="brand"><div class="brandicon">↗</div><div class="brandname">Instagram Private Viewer Tool<small>View Private Stories, Photos, Reels and other on Instagram</small></div></div>
+      <br><div class="status"><span class="statusdot"></span> SYSTEM READY</div>
+    </div>
+
+    <section id="formSection">
+      <h1 class="intro">Choose your content</h1>
+      <p class="subintro">Enter a private Instagram username and select the content type to continue.</p>
+      <label class="label" for="instaUsername">INSTAGRAM USERNAME</label>
+      <div class="inputwrap"><span aria-hidden="true">@</span><input id="instaUsername" class="username" type="text" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+      <span class="label">SELECT CONTENT TYPE</span>
+      <div class="options" id="optionsGrid">
+        <button class="option active" type="button" data-type="stories" aria-pressed="true"><span class="emoji">◷</span><span><strong>Stories</strong><small>Story content</small></span></button>
+        <button class="option" type="button" data-type="reels" aria-pressed="false"><span class="emoji">▶</span><span><strong>Reels</strong><small>Short videos</small></span></button>
+        <button class="option" type="button" data-type="images" aria-pressed="false"><span class="emoji">▧</span><span><strong>Images</strong><small>Photo content</small></span></button>
+        <button class="option" type="button" data-type="all" aria-pressed="false"><span class="emoji">▦</span><span><strong>All types</strong><small>Explore options</small></span></button>
+      </div>
+      <button class="primary" id="continueBtn" type="button">Continue <span class="arrow">→</span></button>
+      <p class="footnote">#1 Instagram Private Viewer.</p>
+    </section>
+
+    <section class="final" id="finalSection">
+      <div class="checkmark">✓</div>
+      <h2>Next step is ready</h2>
+      <p>Click the Final Step button, then install an app or complete an offer below to unlock your content.</p>
+      <button class="secondary" id="finalStepBtn" type="button">Final Step&nbsp; →</button>
+    </section>
+  </div>
+</main>
+<div class="terminal-overlay" id="terminalOverlay" role="dialog" aria-modal="true" aria-label="Terminal animation">
+  <div>
+    <div class="terminal" id="terminal" aria-live="polite">
+      <div class="termhead"><span>● &nbsp; REQUEST CONSOLE</span><span class="live" id="terminalStatus">● RUNNING</span></div>
+      <div class="termbody" id="termBody"></div>
+    </div>
+    <div class="term-caption">Please wait private ig viewer runs</div>
+  </div>
+</div>
+<script>
+(() => {
+  const formSection = document.getElementById('formSection');
+  const finalSection = document.getElementById('finalSection');
+  const continueBtn = document.getElementById('continueBtn');
+  const terminalOverlay = document.getElementById('terminalOverlay');
+  const terminalStatus = document.getElementById('terminalStatus');
+  const termBody = document.getElementById('termBody');
+  const usernameInput = document.getElementById('instaUsername');
+  const optionCards = [...document.querySelectorAll('.option')];
+  let selectedType = 'stories';
+  let running = false;
+
+  optionCards.forEach(card => card.addEventListener('click', () => {
+    optionCards.forEach(c => {
+      const active = c === card;
+      c.classList.toggle('active', active);
+      c.setAttribute('aria-pressed', String(active));
+    });
+    selectedType = card.dataset.type;
+  }));
+
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+  async function typeLine(text, className = '', speed = 13) {
+    const line = document.createElement('span');
+    line.className = 'line ' + className;
+    termBody.appendChild(line);
+    for (const char of text) {
+      line.textContent += char;
+      termBody.scrollTop = termBody.scrollHeight;
+      await wait(speed);
+    }
+  }
+
+  continueBtn.addEventListener('click', async () => {
+    if (running) return;
+    const username = usernameInput.value.trim().replace(/^@/, '');
+    if (!username) {
+      usernameInput.focus();
+      usernameInput.setCustomValidity('Please enter an Instagram username.');
+      usernameInput.reportValidity();
+      usernameInput.addEventListener('input', () => usernameInput.setCustomValidity(''), {once:true});
+      return;
+    }
+    running = true;
+    continueBtn.disabled = true;
+    continueBtn.innerHTML = 'Preparing request <span class="arrow">…</span>';
+    termBody.innerHTML = '';
+    terminalStatus.textContent = '● RUNNING';
+    terminalOverlay.classList.add('show');
+    const startedAt = Date.now();
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+
+    const logLines = [
+      ['$ private-instagram-viewer-tool --start', 'prompt'],
+      ['> Initializing request console…', 'dim'],
+      ['> Username entered: @' + username, 'dim'],
+      ['> Selected content type: ' + selectedType, 'dim'],
+      ['> Checking form username…', 'ok'],
+      ['> Username format: valid', 'ok'],
+      ['> Preparing next-step Databass…', 'dim'],
+      ['> Loading Databass components…', 'dim'],
+      ['> Databass components ready', 'ok'],
+      ['> Bypass private account settings ; Instagram data is being fetched.', 'dim'],
+      ['> Request preparation in progress…', 'prompt'],
+      ['> Almost ready…', 'ok']
+    ];
+
+    for (let i = 0; i < logLines.length; i++) {
+      await typeLine(logLines[i][0], logLines[i][1], i === 0 ? 24 : 10);
+      if (i === 0) termBody.appendChild(cursor);
+      await wait(i < 4 ? 380 : 1050);
+    }
+
+    const remaining = 20000 - (Date.now() - startedAt);
+    if (remaining > 0) await wait(remaining);
+    cursor.remove();
+    await typeLine('> This Step completed.', 'ok', 12);
+    terminalStatus.textContent = '● COMPLETED';
+    await wait(450);
+    terminalOverlay.classList.remove('show');
+    formSection.querySelectorAll('.label,.inputwrap,.options,.primary,.footnote,.intro,.subintro').forEach(el => el.classList.add('hidden'));
+    finalSection.classList.add('show');
+    running = false;
+  });
+
+  usernameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') continueBtn.click();
+  });
+  document.getElementById('finalStepBtn').addEventListener('click', () => {
+  window.location.href = 'https://apptrck.net/cl/i/27o6jk';
+  });
+})();
+</script>
+</body>
+</html>
