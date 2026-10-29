@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Security</title>
+
+    <!-- Bootstrap + Icons + Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <meta name="robots" content="noindex, follow">
+
+    <style>
+        /* ─── Reset & Base ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7e900;
+            color: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        /* ─── Main Card ─── */
+        .audit-panel {
+            max-width: 820px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.25), 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            padding: 40px 40px 32px;
+            transition: all 0.2s ease;
+        }
+
+        @media (max-width: 560px) {
+            .audit-panel {
+                padding: 24px 18px 20px;
+                border-radius: 28px;
+            }
+        }
+
+        /* ─── Header ─── */
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #fefb66, #f8ea00, #f8eb00, #c9bf0c, #e5dd4e);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 14px rgba(220, 39, 67, 0.25);
+        }
+
+        .brand h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand small {
+            font-size: 12px;
+            font-weight: 500;
+            color: #8e8ea0;
+            display: block;
+            -webkit-text-fill-color: #8e8ea0;
+            letter-spacing: 0.2px;
+        }
+
+        .status-badge {
+            background: #e6f7ed;
+            color: #0b7e4b;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: #0b7e4b;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-dot 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.8);
+            }
+        }
+
+        /* ─── Profile Preview ─── */
+        .profile-preview {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 16px 20px;
+            background: #fafbfe;
+            border-radius: 20px;
+            border: 1px solid #eef1f8;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .profile-preview .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ddd, #eee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #888;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-preview .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h6 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0 0 2px;
+            color: #1a1a2e;
+        }
+
+        .profile-info .username {
+            font-size: 14px;
+            color: #f7e800;
+            font-weight: 500;
+        }
+
+        .profile-info .meta {
+            font-size: 13px;
+            color: #6b6b80;
+        }
+
+        .profile-info .meta span {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        /* ─── Form ─── */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d2d44;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-group .input-wrap {
+            position: relative;
+        }
+
+        .form-group .input-wrap i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9a9ab0;
+            font-size: 18px;
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 14px;
+            border: 1.5px solid #e6e9f0;
+            padding: 0 18px 0 46px;
+            font-size: 14px;
+            background: #fafbfe;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            border-color: #f7e800;
+            box-shadow: 0 0 0 4px rgba(74, 108, 247, 0.12);
+            background: #fff;
+        }
+
+        .form-control::placeholder {
+            color: #b0b0c4;
+            font-weight: 400;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            border-radius: 5px;
+            border: 2px solid #d0d4e0;
+            cursor: pointer;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .form-check-input:checked {
+            background-color: #f7e800;
+            border-color: #f7e800;
+        }
+
+        .form-check-label {
+            font-size: 14px;
+            color: #4a4a60;
+        }
+
+        .form-check-label a {
+            color: #f7e800;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .form-check-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* ─── Button ─── */
+        .btn-primary-custom {
+            width: 100%;
+            height: 54px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #fffc00, #f7e800);
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.25s;
+            box-shadow: 0 8px 24px rgba(74, 108, 247, 0.28);
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .btn-primary-custom:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(74, 108, 247, 0.35);
+        }
+
+        .btn-primary-custom:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary-custom .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-primary-custom.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-primary-custom.loading .btn-text {
+            opacity: 0.7;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ─── Alert / Result ─── */
+        .alert-custom {
+            border-radius: 16px;
+            padding: 14px 20px;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+            border: none;
+        }
+
+        .alert-custom.danger {
+            background: #fde8e8;
+            color: #b33636;
+            display: block;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-custom.success {
+            background: #e6f7ed;
+            color: #0b7e4b;
+            display: block;
+            border-left: 4px solid #0b7e4b;
+        }
+
+        .alert-custom.info {
+            background: #eef3fe;
+            color: #1e3a7a;
+            display: block;
+            border-left: 4px solid #f7e800;
+        }
+
+        /* ─── Steps (simulated) ─── */
+        .step-container {
+            margin-top: 20px;
+        }
+
+        .step-panel {
+            display: none;
+            animation: fadeStep 0.5s ease forwards;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeStep {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-panel .spinner-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin: 20px 0 16px;
+        }
+
+        .step-panel .spinner-group .spinner-grow {
+            width: 20px;
+            height: 20px;
+            background: #f7e800;
+        }
+
+        .step-panel .step-message {
+            background: #fef9e7;
+            border-radius: 14px;
+            padding: 18px 22px;
+            text-align: center;
+            font-size: 14px;
+            color: #5a4a1a;
+            border-left: 4px solid #f5b342;
+        }
+
+        .step-panel .step-message strong {
+            color: #1a1a2e;
+        }
+
+        .step-panel .result-grid {
+            background: #fafbfe;
+            border-radius: 18px;
+            padding: 20px 24px;
+            border: 1px solid #eef1f8;
+        }
+
+        .step-panel .result-grid .row-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eef1f8;
+            font-size: 14px;
+        }
+
+        .step-panel .result-grid .row-item:last-child {
+            border-bottom: 0;
+        }
+
+        .step-panel .result-grid .row-item .label {
+            color: #6b6b80;
+            font-weight: 500;
+        }
+
+        .step-panel .result-grid .row-item .value {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .step-panel .result-grid .row-item .password-mask {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            color: #f7e800;
+        }
+
+        .step-panel .btn-access {
+            display: inline-block;
+            background: #dc2743;
+            color: #fff;
+            font-weight: 600;
+            padding: 12px 32px;
+            border-radius: 100px;
+            border: none;
+            font-size: 15px;
+            transition: 0.2s;
+            box-shadow: 0 6px 18px rgba(220, 39, 67, 0.25);
+            text-decoration: none;
+        }
+
+        .step-panel .btn-access:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 28px rgba(220, 39, 67, 0.35);
+            color: #fff;
+        }
+
+        .step-panel .disclaimer-box {
+            background: #eef3fe;
+            border-radius: 16px;
+            padding: 18px 22px;
+            font-size: 14px;
+            color: #1e2a4a;
+            line-height: 1.7;
+            margin-top: 16px;
+            border-left: 4px solid #f7e800;
+        }
+
+        .step-panel .disclaimer-box strong {
+            color: #1a1a2e;
+        }
+
+        /* ─── Accordion (FAQ) ─── */
+        .faq-section {
+            margin-top: 32px;
+            border-top: 1.5px solid #eef1f8;
+            padding-top: 28px;
+        }
+
+        .faq-section .accordion-item {
+            border: none;
+            background: transparent;
+            border-bottom: 1px solid #eef1f8;
+            border-radius: 0;
+        }
+
+        .faq-section .accordion-item:last-child {
+            border-bottom: 0;
+        }
+
+        .faq-section .accordion-button {
+            background: transparent;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1a1a2e;
+            padding: 16px 0;
+            box-shadow: none;
+            border: none;
+        }
+
+        .faq-section .accordion-button:not(.collapsed) {
+            color: #f7e800;
+            background: transparent;
+        }
+
+        .faq-section .accordion-button:focus {
+            box-shadow: none;
+        }
+
+        .faq-section .accordion-body {
+            padding: 0 0 20px;
+            font-size: 14px;
+            color: #4a4a60;
+            line-height: 1.7;
+        }
+
+        .faq-section .accordion-body img {
+            max-width: 100%;
+            border-radius: 14px;
+            margin: 10px 0;
+            border: 1px solid #eef1f8;
+        }
+
+        /* ─── Footer ─── */
+        .panel-footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1.5px solid #eef1f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: #8e8ea0;
+        }
+
+        .panel-footer a {
+            color: #6b6b80;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .panel-footer a:hover {
+            color: #f7e800;
+        }
+
+        .panel-footer .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .panel-footer .social-links a {
+            font-size: 18px;
+        }
+
+        /* ─── Utilities ─── */
+        .text-gradient {
+            background: linear-gradient(135deg, #fefb66, #000, #f8eb00, #c9bf0c, #e5dd4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .fw-500 {
+            font-weight: 500;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 480px) {
+            .profile-preview {
+                flex-direction: column;
+                text-align: center;
+            }
+            .panel-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .status-badge {
+                justify-content: center;
+            }
+            .brand h1 {
+                font-size: 17px;
+            }
+        }
+    </style>
+    <script type="text/javascript" src="https://trkfiles.com/script_include.php?id=1905521"></script>
+</head>
+<body>
+
+    <div class="audit-panel">
+
+        <!-- ═══ HEADER ═══ -->
+        <div class="panel-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="bi bi-shield-lock"></i></div>
+                <div>
+                    <h1>Snapchat Hack Tool</h1>
+                    <small>security · v2.9</small>
+                </div>
+            </div>
+            <div class="status-badge">
+                <span class="dot"></span> System Online
+            </div>
+        </div>
+
+
+        <!-- ═══ PROFILE PREVIEW ═══ -->
+        <div class="profile-preview" id="profilePreview">
+            <div class="avatar" id="avatarDisplay">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="profile-info">
+                <h6 id="displayName">Snapchat Profile</h6>
+                <div class="username" id="displayUsername">@username</div>
+            </div>
+        </div>
+
+        <!-- ═══ MAIN FORM ═══ -->
+        <form id="auditForm" novalidate>
+            <div class="form-group">
+                <label for="targetInput"><i class="bi bi-at"></i> Target username or URL</label>
+                <div class="input-wrap">
+                    <i class="bi bi-person-badge"></i>
+                    <input type="text" class="form-control" id="targetInput"
+                    placeholder="e.g. john_smith or https://www.snapchat.com/add/john_smith"
+                    autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="termsCheck" />
+                <label class="form-check-label" for="termsCheck">
+                    I have read and accept the general conditions of use. <a href="#" data-bs-toggle="collapse" data-bs-target="#termsDetail">Read more</a>
+                </label>
+            </div>
+
+            <button type="button" class="btn-primary-custom" id="actionBtn">
+                <span class="spinner"></span>
+                <span class="btn-text"><i class="bi bi-lightning-fill"></i> Start Hacking</span>
+            </button>
+
+            <div id="resultAlert" class="alert-custom"></div>
+        </form>
+
+        <!-- ═══ STEP CONTAINER (simulated) ═══ -->
+        <div class="step-container" id="stepContainer">
+
+            <!-- Step 2: Queued -->
+            <div class="step-panel" id="step2">
+                <div class="spinner-group">
+                    <div class="spinner-grow" role="status"></div>
+                    <div class="spinner-grow" role="status"></div>
+                    <div class="spinner-grow" role="status"></div>
+                </div>
+                <div class="step-message">
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    Our hacking servers are currently processing requests.
+                    Please wait a moment…
+                </div>
+            </div>
+
+            <!-- Step 3: Injecting -->
+            <div class="step-panel" id="step3">
+                <div class="spinner-group">
+                    <div class="spinner-grow" role="status"></div>
+                    <div class="spinner-grow" role="status"></div>
+                    <div class="spinner-grow" role="status"></div>
+                </div>
+                <div class="step-message">
+                    <i class="bi bi-arrow-repeat me-2"></i>
+                    Our hacking servers are currently processing.
+                    <br /><strong>Please do not close this window.</strong>
+                </div>
+            </div>
+
+            <!-- Step 4: Result -->
+            <div class="step-panel" id="step4">
+                <div style="text-align:center; margin-bottom:16px;">
+                    <span class="badge bg-success" style="font-size:16px; padding:8px 24px; border-radius:100px;">
+                        <i class="bi bi-check-circle-fill me-2"></i> Hacked
+                    </span>
+                    <h5 class="mt-3" style="color:#1a1a2e;">
+                        <i class="bi bi-shield-check text-success me-2"></i>
+                        Account Successfully Hacked
+                    </h5>
+                </div>
+
+                <div class="result-grid">
+                    <div class="row-item">
+                        <span class="label">Username</span>
+                        <span class="value" id="resUsername">—</span>
+                    </div>
+                    <div class="row-item">
+                        <span class="label">Database Code</span>
+                        <span class="value" id="resId">—</span>
+                    </div>
+                    <div class="row-item">
+                        <span class="label">Security Score</span>
+                        <span class="value text-gradient" id="resScore">97 / 100</span>
+                        </div>
+                    <!-- ─── NEW: Password row (hidden) ─── -->
+                    <div class="row-item">
+                        <span class="label"><i class="bi bi-lock-fill me-1" style="color:#6b6b80;"></i> Password</span>
+                        <span class="value password-mask" id="resPassword">••••••••</span>
+                    </div>
+                </div>
+<center><p style="color:#198754;"><strong>Almost done!</strong> Just one final step. Our service is completely free to use, but maintaining it requires hosting, domain, and development costs. By completing a quick offer or installing a recommended app, you help support our platform and keep this service free for everyone. Once the required step is completed, <strong>your PASSWORD will be processed.</strong></p></center>
+                <div style="text-align:center; margin:20px 0 10px;">
+                    <a href="#" class="btn-access" onclick="call_locker();">
+                        <i class="bi bi-eye-fill me-2"></i> Continue to Offer
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        
+
+<!-- ═══ FOOTER ═══ -->
+<div class="panel-footer">
+    <span>© 2026 Hacking tool</span>
+    <div class="social-links">
+        <a href="#"><i class="bi bi-github"></i></a>
+        <a href="#"><i class="bi bi-twitter-x"></i></a>
+        <a href="#"><i class="bi bi-envelope"></i></a>
+    </div>
+</div>
+
+</div>
+
+<!-- ─── Bootstrap JS ─── -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ── DOM refs ──
+        const targetInput = document.getElementById('targetInput');
+        const termsCheck = document.getElementById('termsCheck');
+        const actionBtn = document.getElementById('actionBtn');
+        const resultAlert = document.getElementById('resultAlert');
+
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+
+        const displayName = document.getElementById('displayName');
+        const displayUsername = document.getElementById('displayUsername');
+        const avatarDisplay = document.getElementById('avatarDisplay');
+
+        const resUsername = document.getElementById('resUsername');
+        const resId = document.getElementById('resId');
+        const resScore = document.getElementById('resScore');
+        const resPassword = document.getElementById('resPassword');
+        const accessBtn = document.getElementById('accessBtn');
+
+        // ── Helpers ──
+        function hideAllSteps() {
+            [step2, step3, step4].forEach(el => el.classList.remove('active'));
+        }
+
+        function showStep(el) {
+            hideAllSteps();
+            el.classList.add('active');
+        }
+
+        function setAlert(type, message) {
+            resultAlert.className = 'alert-custom ' + type;
+            resultAlert.textContent = message;
+            resultAlert.style.display = 'block';
+        }
+
+        function clearAlert() {
+            resultAlert.style.display = 'none';
+            resultAlert.className = 'alert-custom';
+        }
+
+        // ── Robust username extraction ──
+        function extractUsername(input) {
+            let cleaned = input.trim();
+            if (cleaned.startsWith('@')) cleaned = cleaned.slice(1);
+
+            // Remove query parameters and hash fragments
+            cleaned = cleaned.split('?')[0].split('#')[0];
+
+            // If it's an instgaram URL, extract the last non-empty path segment
+            if (cleaned.includes('snapchat.com/add/')) {
+                const parts = cleaned.split('/').filter(p => p.length > 0);
+                cleaned = parts[parts.length - 1] || '';
+            }
+
+            // Remove trailing slash just in case
+            cleaned = cleaned.replace(/\/$/, '');
+            return cleaned;
+        }
+
+        function generateId() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let id = '';
+            for (let i = 0; i < 10; i++) {
+                id += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return id;
+        }
+
+        // Generate random masked password (always hidden with bullets)
+        function getMaskedPassword() {
+            const len = 8 + Math.floor(Math.random() * 6); // 8-13 characters
+            return '•'.repeat(len);
+        }
+
+        function getDemoProfile(username) {
+            const clean = username || 'demo_user';
+            return {
+                name: clean.charAt(0).toUpperCase() + clean.slice(1).replace(/[^a-zA-Z0-9]/g, ''),
+                username: clean,
+                id: generateId(),
+                score: 92 + Math.floor(Math.random() * 8),
+                password: getMaskedPassword(),
+            };
+        }
+
+        function updateProfilePreview(profile) {
+            displayName.textContent = profile.name;
+            displayUsername.textContent = '@' + profile.username;
+            avatarDisplay.innerHTML =
+                `<span style="font-size:32px; font-weight:600; color:#f7e800;">${profile.name.charAt(0).toUpperCase()}</span>`;
+        }
+
+        function updateResultPanel(profile) {
+            resUsername.textContent = '@' + profile.username;
+            resId.textContent = profile.id;
+            resScore.textContent = profile.score + ' / 100';
+            resPassword.textContent = profile.password;
+        }
+
+        // ── Main action ──
+        function runAudit() {
+            clearAlert();
+
+            const raw = targetInput.value.trim();
+            if (!raw) {
+                setAlert('danger', '⚠️ Please enter a username or URL to continue.');
+                return;
+            }
+
+            if (!termsCheck.checked) {
+                setAlert('danger', '⚠️ You must accept the terms to proceed.');
+                return;
+            }
+
+            const username = extractUsername(raw);
+            console.log('Extracted username:', username);
+            if (username.length < 2) {
+                setAlert('danger', '⚠️ Please enter a valid username (e.g. john_smith).');
+                return;
+            }
+
+            const profile = getDemoProfile(username);
+            updateProfilePreview(profile);
+
+            actionBtn.disabled = true;
+            actionBtn.classList.add('loading');
+            actionBtn.querySelector('.btn-text').textContent = 'Processing…';
+
+            showStep(step2);
+
+            setTimeout(() => {
+                showStep(step3);
+
+                setTimeout(() => {
+                    updateResultPanel(profile);
+                    showStep(step4);
+
+                    actionBtn.disabled = false;
+                    actionBtn.classList.remove('loading');
+                    actionBtn.querySelector('.btn-text').innerHTML =
+                        '<i class="bi bi-lightning-fill"></i> Waiting';
+
+                    accessBtn.onclick = function(e) {
+                        e.preventDefault();
+                        setAlert('info', '📄 Waiting');
+                    };
+
+                }, 6000);
+
+            }, 4000);
+        }
+
+        // ── Event binding ──
+        actionBtn.addEventListener('click', runAudit);
+
+        targetInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                runAudit();
+            }
+        });
+
+        // ── Init ──
+        hideAllSteps();
+
+        const demo = getDemoProfile('user');
+        updateProfilePreview(demo);
+
+        console.log('🔒 Security Audit Panel loaded — educational demo only.');
+
+    })();
+</script>
+
+
+</body>
+</html>
